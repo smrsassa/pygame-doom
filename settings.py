@@ -1,0 +1,27 @@
+# -=- GAME SETUP -=-
+MAX_FPS = 15
+TELA_LARGURA = 1024
+TELA_ALTURA = int(TELA_LARGURA/2)
+
+MAP_X = MAP_Y = 8
+MAP_S = 64
+MAP = [
+    1,1,1,1,1,1,1,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,1,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,1,
+    1,1,1,1,1,1,1,1
+]
+
+# -=- MATH -=-
+PI = 3.141592653589793
+
+# -=- PLAYER -=-
+PLAYERSIZE = 8
+PLAYERFOV = PI/3
+
+QTDRAYS = 120
+ESCALA = (TELA_LARGURA / 2) / QTDRAYS 
