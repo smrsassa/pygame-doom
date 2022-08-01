@@ -2,10 +2,15 @@ import pygame, math
 from settings import *
 
 
+pygame.init()
+infoObject = pygame.display.Info()
+TELA_LARGURA = infoObject.current_w
+TELA_ALTURA = infoObject.current_h
+ESCALA = TELA_LARGURA / QTDRAYS 
+
 class Raycaster:
     def __init__(self) -> None:
-        pygame.init()
-        self.tela = pygame.display.set_mode(( TELA_LARGURA, TELA_ALTURA ))
+        self.tela = pygame.display.set_mode(( TELA_LARGURA, TELA_ALTURA ), pygame.NOFRAME | pygame.FULLSCREEN)
         pygame.display.set_caption('Raycaster')
         self.clock = pygame.time.Clock()
         self.tela.fill(pygame.Color(40, 40, 40))
@@ -15,25 +20,6 @@ class Raycaster:
         self.pa = 0
         self.pdx = math.cos(self.pa) * 5
         self.pdy = math.sin(self.pa) * 5
-
-    def drawMap(self) -> None:
-        for y in range(0, MAP_Y):
-            for x in range(0, MAP_X):
-                color = (0,0,0)
-                if MAP[y*MAP_X+x] == 1:
-                    color = (255,255,255)
-                xo=x*MAP_S
-                yo=y*MAP_S
-                pygame.draw.polygon(self.tela, color, [
-                    (xo        +1, yo        +1), 
-                    (xo        +1, yo + MAP_S-1), 
-                    (xo + MAP_S-1, yo + MAP_S-1), 
-                    (xo + MAP_S-1, yo        +1)
-                ])
-
-    def drawPlayer(self) -> None:
-        pygame.draw.rect(self.tela, (0, 255, 0), ((self.px,self.py), (PLAYERSIZE,PLAYERSIZE)))
-        #pygame.draw.line(self.tela, (0, 255, 0), (self.px+PLAYERSIZE/2,self.py+PLAYERSIZE/2), (self.px+self.pdx*5,self.py+self.pdy*5), 2) #visao
 
     def drawRays2D(self) -> None:
         angle = self.pa + (PI * 1.5 - (PLAYERFOV * (PLAYERFOV/2)))
@@ -48,9 +34,7 @@ class Raycaster:
                 
                 square = row * MAP_X + col
 
-                if MAP[square] == 1:
-                    pygame.draw.line(self.tela, (0, 0, 255), (self.px+PLAYERSIZE/2,self.py+PLAYERSIZE/2), (target_x, target_y))
-                                        
+                if MAP[square] == 1:  
                     ca = (self.pa + (PI * 1.5)) - angle
                     if ca < 0:
                         ca += 2*PI
@@ -60,18 +44,22 @@ class Raycaster:
 
                     color = 255 / int(2 + depth * depth * 0.0001)
 
-                    wall_height = 21000 / (depth + 0.0001)
+                    wall_height = 33000 / (depth + 0.0001)
 
                     if wall_height > TELA_ALTURA: wall_height = TELA_ALTURA 
 
-                    pygame.draw.rect(self.tela, (color, color, color), (TELA_ALTURA + ray * ESCALA,(TELA_ALTURA / 2) - wall_height / 2, ESCALA+1, wall_height))
+                    pygame.draw.rect(self.tela, (color, color, color), (
+                        ray * ESCALA,
+                        (TELA_ALTURA / 2) - wall_height / 2, 
+                        ESCALA + 1, 
+                        wall_height
+                    ))
                     break
 
             angle += PLAYERFOV / 120
 
     def display(self) -> None:
         self.drawRays2D()
-        self.drawPlayer()
 
     def controles(self) -> None:
         # -=- Teclado -=-
@@ -133,12 +121,10 @@ class Raycaster:
 
             self.tela.fill(pygame.Color(40, 40, 40))
 
-            pygame.draw.rect(self.tela, (90, 90, 90), (512, TELA_ALTURA / 2, TELA_ALTURA, TELA_ALTURA))
-            pygame.draw.rect(self.tela, (222, 222, 222), (512, - TELA_ALTURA / 2, TELA_ALTURA, TELA_ALTURA))
+            pygame.draw.rect(self.tela, (222, 222, 222), (0, 0, TELA_LARGURA, TELA_ALTURA/2))
+            pygame.draw.rect(self.tela, (90, 90, 90), (0, TELA_ALTURA / 2, TELA_LARGURA, TELA_ALTURA/2))
 
             self.controles()
-
-            self.drawMap()
 
             self.display()
 
